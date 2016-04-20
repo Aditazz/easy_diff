@@ -24,8 +24,11 @@ module EasyDiff
           added[key] = a unless _blank?(a)
         end
       elsif original.is_a?(Array) && modified.is_a?(Array)
-        removed = original - modified
-        added   = modified - original
+        if original != modified
+          # removed = original - modified
+          # added   = modified - original
+          added   = modified.safe_dup
+        end
       elsif original != modified
         removed   = original
         added     = modified
@@ -54,11 +57,11 @@ module EasyDiff
       elsif original.is_a?(Hash) && added.is_a?(Hash)
         added_keys = added.keys
         added_keys.each{ |key| original[key] = easy_merge!(original[key], added[key])}
-      elsif original.is_a?(Array) && added.is_a?(Array)
-        original |=  added
-        original.sort_by! { |item|
-          item.is_a?(Hash) ? item.sort : item
-        }
+      # elsif original.is_a?(Array) && added.is_a?(Array)
+      #   original |=  added
+      #   original.sort_by! { |item|
+      #     item.is_a?(Hash) ? item.sort : item
+      #   }
       else
         original = added.safe_dup
       end
